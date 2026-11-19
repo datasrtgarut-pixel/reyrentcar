@@ -1,0 +1,6 @@
+{
+  "name": "REY RENT CAR",
+  "description": "SMART ATTENDANCE – REALTIME EMPLOYEE MONITORING. Sistem manajemen kehadiran pegawai berbasis verifikasi wajah, GPS realtime, tracker perjalanan, pengajuan izin, dan laporan otomatis.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,355 @@
+{
+  "entities": {
+    "Admin": {
+      "title": "Admin",
+      "description": "Akun direktur dan administrator sistem REY RENT CAR.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "minLength": 3, "maxLength": 160 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "role": { "type": "string", "enum": ["director", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "name", "role", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Profil pengguna terautentikasi dan persetujuan privasi biometrik/lokasi.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "minLength": 3, "maxLength": 160 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "role": { "type": "string", "enum": ["admin", "employee"] },
+        "employeeId": { "type": "string", "maxLength": 64 },
+        "username": { "type": "string", "maxLength": 64 },
+        "consentBiometric": { "type": "boolean" },
+        "consentLocation": { "type": "boolean" },
+        "consentAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "consentBiometric", "consentLocation", "updatedAt"]
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "Data master pegawai REY RENT CAR termasuk biometrik wajah dan status aktif.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeCode": { "type": "string", "minLength": 3, "maxLength": 32 },
+        "fullName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "username": { "type": "string", "minLength": 2, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "maxLength": 160 },
+        "phone": { "type": "string", "minLength": 6, "maxLength": 32 },
+        "position": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "photoUrl": { "type": "string", "maxLength": 250000 },
+        "faceEnrolled": { "type": "boolean" },
+        "faceSignature": { "type": "array" },
+        "linkedUid": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "employeeCode", "fullName", "username", "phone", "position", "status", "faceEnrolled", "createdAt", "updatedAt"]
+    },
+    "EmployeeCredential": {
+      "title": "EmployeeCredential",
+      "description": "Kredensial terhash (scrypt) per username pegawai tanpa menyimpan password plaintext.",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string", "minLength": 2, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "passwordHash": { "type": "string", "minLength": 32, "maxLength": 256 },
+        "passwordSalt": { "type": "string", "minLength": 16, "maxLength": 128 },
+        "linkedUid": { "type": "string", "maxLength": 128 },
+        "mustChangePassword": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["username", "employeeId", "passwordHash", "passwordSalt", "mustChangePassword", "updatedAt"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Catatan absensi masuk & pulang harian pegawai berbasis waktu server WIB dan verifikasi wajah + GPS.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "dateWib": { "type": "string", "minLength": 10, "maxLength": 10 },
+        "checkInTime": { "type": "string", "maxLength": 16 },
+        "checkInEpoch": { "type": "number" },
+        "checkInLat": { "type": "number" },
+        "checkInLng": { "type": "number" },
+        "checkInAccuracy": { "type": "number" },
+        "checkInAddress": { "type": "string", "maxLength": 300 },
+        "checkInPhoto": { "type": "string", "maxLength": 250000 },
+        "checkInLivenessScore": { "type": "number" },
+        "checkInMockSuspected": { "type": "boolean" },
+        "checkInMockReason": { "type": "string", "maxLength": 200 },
+        "checkOutTime": { "type": "string", "maxLength": 16 },
+        "checkOutEpoch": { "type": "number" },
+        "checkOutLat": { "type": "number" },
+        "checkOutLng": { "type": "number" },
+        "checkOutAccuracy": { "type": "number" },
+        "checkOutAddress": { "type": "string", "maxLength": 300 },
+        "checkOutPhoto": { "type": "string", "maxLength": 250000 },
+        "checkOutLivenessScore": { "type": "number" },
+        "checkOutMockSuspected": { "type": "boolean" },
+        "checkOutMockReason": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["hadir", "terlambat", "belum_pulang", "pulang_cepat", "lembur", "izin", "sakit", "cuti", "alpha"] },
+        "workMinutes": { "type": "number" },
+        "netWorkMinutes": { "type": "number" },
+        "breakDeductedMinutes": { "type": "number" },
+        "lateMinutes": { "type": "number" },
+        "earlyLeaveMinutes": { "type": "number" },
+        "overtimeMinutes": { "type": "number" },
+        "overtimeApproved": { "type": "boolean" },
+        "reClockInApproved": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "employeeId", "employeeName", "uid", "dateWib", "status", "createdAt", "updatedAt"]
+    },
+    "FaceVerification": {
+      "title": "FaceVerification",
+      "description": "Log verifikasi wajah liveness detection dan pendaftaran biometrik pegawai.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actionType": { "type": "string", "enum": ["enroll", "check_in", "check_out"] },
+        "livenessPassed": { "type": "boolean" },
+        "challengePrompt": { "type": "string", "maxLength": 160 },
+        "similarityScore": { "type": "number" },
+        "photoData": { "type": "string", "maxLength": 250000 },
+        "timestampWib": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "employeeId", "uid", "actionType", "livenessPassed", "similarityScore", "timestampWib", "createdAt"]
+    },
+    "Location": {
+      "title": "Location",
+      "description": "Status lokasi GPS terkini dan status online pegawai untuk peta monitoring realtime.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "accuracy": { "type": "number" },
+        "speed": { "type": "number" },
+        "address": { "type": "string", "maxLength": 300 },
+        "isTracking": { "type": "boolean" },
+        "isOnline": { "type": "boolean" },
+        "activeTripId": { "type": "string", "maxLength": 128 },
+        "mockSuspected": { "type": "boolean" },
+        "lastUpdatedWib": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["employeeId", "employeeName", "uid", "lat", "lng", "isTracking", "isOnline", "lastUpdatedWib", "updatedAt"]
+    },
+    "TrackingHistory": {
+      "title": "TrackingHistory",
+      "description": "Sesi perjalanan dan jejak titik koordinat GPS pegawai selama bertugas.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "dateWib": { "type": "string", "minLength": 10, "maxLength": 10 },
+        "purpose": { "type": "string", "minLength": 2, "maxLength": 200 },
+        "status": { "type": "string", "enum": ["active", "completed", "interrupted"] },
+        "startTimeWib": { "type": "string", "maxLength": 32 },
+        "endTimeWib": { "type": "string", "maxLength": 32 },
+        "startLat": { "type": "number" },
+        "startLng": { "type": "number" },
+        "startAddress": { "type": "string", "maxLength": 300 },
+        "endLat": { "type": "number" },
+        "endLng": { "type": "number" },
+        "endAddress": { "type": "string", "maxLength": 300 },
+        "distanceKm": { "type": "number" },
+        "pointsCount": { "type": "number" },
+        "points": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "employeeId", "employeeName", "uid", "dateWib", "purpose", "status", "startTimeWib", "startLat", "startLng", "distanceKm", "pointsCount", "points", "createdAt", "updatedAt"]
+    },
+    "LeaveRequest": {
+      "title": "LeaveRequest",
+      "description": "Pengajuan izin, sakit, cuti, tidak masuk, atau keperluan mendesak pegawai beserta bukti dokumen.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "employeeName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "type": { "type": "string", "enum": ["izin_pribadi", "sakit", "cuti", "tidak_masuk", "keperluan_mendesak"] },
+        "startDate": { "type": "string", "minLength": 10, "maxLength": 10 },
+        "endDate": { "type": "string", "minLength": 10, "maxLength": 10 },
+        "reason": { "type": "string", "minLength": 3, "maxLength": 500 },
+        "attachmentName": { "type": "string", "maxLength": 160 },
+        "attachmentType": { "type": "string", "maxLength": 64 },
+        "attachmentData": { "type": "string", "maxLength": 650000 },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "adminNote": { "type": "string", "maxLength": 300 },
+        "reviewedBy": { "type": "string", "maxLength": 120 },
+        "reviewedAt": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "employeeId", "employeeName", "uid", "type", "startDate", "endDate", "reason", "status", "createdAt", "updatedAt"]
+    },
+    "WorkSchedule": {
+      "title": "WorkSchedule",
+      "description": "Pengaturan jam kerja operasional, batas keterlambatan, waktu istirahat, dan aturan lembur.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "startTime": { "type": "string", "minLength": 5, "maxLength": 5 },
+        "endTime": { "type": "string", "minLength": 5, "maxLength": 5 },
+        "lateToleranceMinutes": { "type": "number" },
+        "breakMinutes": { "type": "number" },
+        "breakThresholdHours": { "type": "number" },
+        "overtimeMinMinutes": { "type": "number" },
+        "requireOvertimeApproval": { "type": "boolean" },
+        "timezone": { "type": "string", "maxLength": 40 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "startTime", "endTime", "lateToleranceMinutes", "breakMinutes", "breakThresholdHours", "overtimeMinMinutes", "requireOvertimeApproval", "timezone", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Notifikasi realtime untuk direktur/admin dan pegawai.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "targetRole": { "type": "string", "enum": ["admin", "employee"] },
+        "targetEmployeeId": { "type": "string", "maxLength": 64 },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "category": { "type": "string", "enum": ["check_in", "check_out", "late", "leave", "tracking", "gps_alert", "system"] },
+        "title": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "message": { "type": "string", "minLength": 2, "maxLength": 350 },
+        "isRead": { "type": "boolean" },
+        "createdAtWib": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "targetRole", "uid", "category", "title", "message", "isRead", "createdAtWib", "createdAt"]
+    },
+    "MonthlyReport": {
+      "title": "MonthlyReport",
+      "description": "Arsip laporan kehadiran bulanan otomatis yang tersimpan di dashboard admin.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "monthKey": { "type": "string", "minLength": 7, "maxLength": 7 },
+        "generatedBy": { "type": "string", "maxLength": 120 },
+        "totalEmployees": { "type": "number" },
+        "attendanceRate": { "type": "number" },
+        "totalHours": { "type": "number" },
+        "summaryText": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "monthKey", "generatedBy", "totalEmployees", "attendanceRate", "totalHours", "createdAt"]
+    },
+    "AdminSetting": {
+      "title": "AdminSetting",
+      "description": "Pengaturan sistem, zona waktu WIB, kebijakan privasi, dan prosedur penghapusan data.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "companyName": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "tagline": { "type": "string", "maxLength": 160 },
+        "timezone": { "type": "string", "maxLength": 40 },
+        "privacyPolicyText": { "type": "string", "maxLength": 3000 },
+        "dataRetentionDays": { "type": "number" },
+        "allowMockLocation": { "type": "boolean" },
+        "requireConsent": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "companyName", "tagline", "timezone", "privacyPolicyText", "dataRetentionDays", "allowMockLocation", "requireConsent", "updatedAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Audit log perubahan data penting dan aktivitas admin/pegawai.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorEmail": { "type": "string", "maxLength": 160 },
+        "actorRole": { "type": "string", "enum": ["admin", "employee"] },
+        "action": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "targetCollection": { "type": "string", "maxLength": 64 },
+        "targetId": { "type": "string", "maxLength": 128 },
+        "details": { "type": "string", "maxLength": 400 },
+        "timestampWib": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "actorUid", "actorRole", "action", "targetCollection", "targetId", "details", "timestampWib", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{userId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Daftar administrator dan direktur REY RENT CAR."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Profil pengguna dan status persetujuan privasi."
+    },
+    "/employees/{employeeId}": {
+      "schema": { "$ref": "#/entities/Employee" },
+      "description": "Data master 9 pegawai dan pegawai tambahan yang dikelola admin."
+    },
+    "/employeeCredentials/{username}": {
+      "schema": { "$ref": "#/entities/EmployeeCredential" },
+      "description": "Hash kredensial login per username pegawai."
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Catatan absensi masuk & pulang harian pegawai."
+    },
+    "/faceVerification/{recordId}": {
+      "schema": { "$ref": "#/entities/FaceVerification" },
+      "description": "Log hasil verifikasi wajah dan liveness."
+    },
+    "/locations/{employeeId}": {
+      "schema": { "$ref": "#/entities/Location" },
+      "description": "Posisi GPS terakhir tiap pegawai."
+    },
+    "/trackingHistory/{tripId}": {
+      "schema": { "$ref": "#/entities/TrackingHistory" },
+      "description": "Riwayat rute perjalanan dan jarak tempuh pegawai."
+    },
+    "/leaveRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/LeaveRequest" },
+      "description": "Pengajuan izin, sakit, cuti, tidak masuk beserta lampiran dokumen."
+    },
+    "/workSchedules/{scheduleId}": {
+      "schema": { "$ref": "#/entities/WorkSchedule" },
+      "description": "Konfigurasi jam kerja dan aturan lembur."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "Notifikasi realtime dashboard admin & pegawai."
+    },
+    "/monthlyReports/{reportId}": {
+      "schema": { "$ref": "#/entities/MonthlyReport" },
+      "description": "Arsip laporan bulanan otomatis."
+    },
+    "/adminSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/AdminSetting" },
+      "description": "Pengaturan sistem dan kebijakan privasi."
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Audit log perubahan data penting."
+    }
+  }
+}
